@@ -6,3 +6,4 @@
 terra-key-ec2-3
 crash.log
 crash.*.log
+provider.tf
