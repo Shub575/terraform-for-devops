@@ -1,7 +1,12 @@
 # key pair for login
 resource "aws_key_pair" "my_key_1" {
-  key_name   = "terra-key-ec2-3"
+  key_name   = "${var.env}-terra-key-ec2-3"
   public_key = file("terra-key-ec2-3.pub")
+
+  tags = {
+    Environment = var.env
+  }
+
 }
 # VPC & Security group
 resource "aws_default_vpc" "default" {
@@ -9,7 +14,7 @@ resource "aws_default_vpc" "default" {
 }
 
 resource "aws_security_group" "my_sg_1" {
-  name        = "automate-sg-3"
+  name        = "${var.env}-automate-sg-3"
   description = "this will add a TF generated security group"
   vpc_id      = aws_default_vpc.default.id #interpolation
 
@@ -37,7 +42,8 @@ resource "aws_security_group" "my_sg_1" {
     description = "Allow all outbound traffic"
   }
   tags = {
-    Name = "allow_tls"
+    Name = "${var.env}-automate-sg-3"
+    Environment = var.env
   }
 }
 # ec2 instance
@@ -45,8 +51,7 @@ resource "aws_instance" "my_instance_1" {
 #   count = 2
   for_each = tomap({
     shub_instance_1 = "t2.micro"
-    shub_instance_2 = "t2.micro"
-    shub_instance_5 = "t2.large"
+
   }) # meta argument
 
   depends_on = [aws_security_group.my_sg_1]
@@ -63,5 +68,6 @@ resource "aws_instance" "my_instance_1" {
   }
   tags = {
     Name = each.key
+    Environment = var.env
   }
 }
