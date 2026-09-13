@@ -46,7 +46,7 @@ resource "aws_instance" "my_instance_1" {
   for_each = tomap({
     shub_instance_1 = "t2.micro"
     shub_instance_2 = "t2.micro"
-    shub_instance_5 = "t2.large"
+    # shub_instance_5 = "t2.large"
   }) # meta argument
 
   depends_on = [aws_security_group.my_sg_1]
@@ -58,10 +58,11 @@ resource "aws_instance" "my_instance_1" {
   user_data       = file("install_nginx.sh")
 
   root_block_device {
-    volume_size = var.env == "prd" ? 20 : var.ec2_root_default_storage_size
+    volume_size = var.env == "prd" ? 10 : var.ec2_root_default_storage_size
     volume_type = "gp3"
   }
   tags = {
     Name = each.key
+    Environment = var.env
   }
 }
